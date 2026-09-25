@@ -1,42 +1,19 @@
-# TB Planner
+# TB Planner for Windows
 
-**TB Planner** is a standalone task planning application for Linux.
+**TB Planner** is a standalone task planning application for Windows.
 
 It combines a hierarchical task list with a Gantt-style timeline and synchronizes project tasks with a CalDAV server using VTODO calendar items.
 
 ## Features
 
-- Hierarchical task list
-- WBS-style task numbering
-- Gantt-style project timeline
-- Start date, due date and duration
-- CalDAV / VTODO synchronization
-- WebDAV/CalDAV server connection
-- Qt 6 / PySide6 user interface
-- Python backend
-- Standalone Linux executable
-- AppImage distribution
-
-## Screenshots
-
-Screenshots will be added here.
-
-## Download
-
-Pre-built Linux releases are available here:
-
-https://github.com/tino1003870/tb-planner-nx/releases
-
-### AppImage
-
-Download **TB-Planner-x86_64.AppImage**, make it executable and start it:
-
-```bash
-chmod +x TB-Planner-x86_64.AppImage
-./TB-Planner-x86_64.AppImage
-```
-
-The AppImage contains the required Python and Qt runtime.
+* Hierarchical task list
+* WBS-style task numbering
+* Gantt-style project timeline
+* Start date, due date and duration
+* CalDAV / VTODO synchronization
+* WebDAV/CalDAV server connection
+* Qt 6 / PySide6 user interface
+* Python backend
 
 ## Development
 
@@ -44,36 +21,29 @@ The application is developed using Python 3 and Qt 6 / PySide6.
 
 Create a virtual environment:
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
+```cmd
+python -m venv .venv
+.venv\Scripts\activate
 ```
 
 Run the application from the source tree:
 
-```bash
-python src/main.py
+```cmd
+python src\main.py
 ```
 
-## Building
+## Windows Development
 
-The standalone Linux executable is built using PyInstaller.
+The Windows port is developed separately from the `tb-planner-nx` project.
 
-```bash
-source .venv/bin/activate
-pyinstaller TB-Planner.spec
-```
-
-The resulting executable is created in `dist/TB-Planner`.
-
-An AppImage can then be created using `appimagetool`.
+The goal is to keep the existing application architecture and functionality while providing a native Windows development and build environment without requiring Visual Studio.
 
 ## Status
 
 **Current release: v0.1.0**
 
-The first release provides the Qt 6 application, hierarchical task handling, Gantt-style visualization, CalDAV/VTODO synchronization and Linux AppImage distribution.
+The initial Windows port is based on the current `tb-planner-nx` source tree.
 
 ## License
 
-License information will be added in a future release.
+See the `LICENSE` file included in the repository.
