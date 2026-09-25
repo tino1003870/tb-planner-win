@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 src/qml/Python.qml.bak
+build/
+dist/
+*.bak

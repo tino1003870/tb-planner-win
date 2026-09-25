@@ -11,6 +11,14 @@ from python.qtbridge import PythonBridge
 def main():
     project_root = Path(__file__).resolve().parent
 
+    print("=== PATH DEBUG MAIN ===")
+    print("__file__      =", __file__)
+    print("project_root  =", project_root)
+    print("python path   =", project_root / "python")
+    print("cwd           =", Path.cwd())
+    print("sys.path      =", sys.path)
+    print("=== END PATH DEBUG ===")
+
     # Bestehende Planner-Python-Module auffindbar machen
     sys.path.insert(0, str(project_root / "python"))
 

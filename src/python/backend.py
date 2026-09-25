@@ -1,7 +1,13 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import json
 from pathlib import Path
+
+print("=== BACKEND PATH DEBUG ===")
+print("backend __file__ =", __file__)
+print("backend cwd      =", Path.cwd())
+print("backend dir      =", Path(__file__).resolve().parent)
+print("=== END BACKEND PATH DEBUG ===")
 
 from taskmodel import TaskModel
 from syncmanager import SyncManager
@@ -141,11 +147,11 @@ class PlannerBackend:
 
     def syncTasks(self, calendarUrl, username, password):
         """
-        Synchronisiert die aktuell im Python-TaskModel vorhandenen
-        Tasks mit planner.py.
+        Synchronisiert die aktuell XYM tasks mit planner.py.
         """
-        import subprocess
+        import io
         import sys
+        import planner
 
         request = self.buildSyncRequest(
             calendarUrl,
@@ -160,39 +166,26 @@ class PlannerBackend:
         )
         print("===== END DEBUG PLANNER REQUEST =====", flush=True)
 
-        planner_script = (
-            Path(__file__).resolve().parent / "planner.py"
-        )
+        old_stdin = sys.stdin
+        old_stdout = sys.stdout
 
         try:
-            process = subprocess.run(
-                [sys.executable, str(planner_script)],
-                input=json.dumps(request),
-                text=True,
-                capture_output=True,
-                timeout=60
+            sys.stdin = io.StringIO(
+                json.dumps(request)
             )
+            sys.stdout = io.StringIO()
 
-            if process.returncode != 0:
-                return {
-                    "success": False,
-                    "error": (
-                        process.stderr.strip()
-                        or "planner.py beendet mit Fehler."
-                    )
-                }
+            planner.main_cli()
 
-            response = json.loads(process.stdout)
+            planner_output = sys.stdout.getvalue()
 
-            result = self.applySyncResults(response)
+        finally:
+            sys.stdin = old_stdin
+            sys.stdout = old_stdout
 
-            return result
+        response = json.loads(planner_output)
 
-        except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+        return self.applySyncResults(response)
 
     def applySyncResults(self, response):
         tasks = self.taskModel.taskArray()
@@ -363,6 +356,20 @@ def syncTasks(calendar_url, username, password):
 
 
 def loadWebDeTasks(calendar_url, username, password):
+    import sys
+    print("=== XML IMPORT TEST ===")
+    print("sys.frozen =", getattr(sys, "frozen", False))
+    print("sys.meta_path =", sys.meta_path)
+    try:
+        import xml
+        print("xml OK:", xml)
+        print("xml file:", getattr(xml, "__file__", None))
+        import xml.etree.ElementTree as ET
+        print("ElementTree OK:", ET)
+        print("ElementTree file:", getattr(ET, "__file__", None))
+    except Exception as e:
+        print("XML IMPORT FAILED:", repr(e))
+
     from planner import Planner
 
     print(
@@ -498,3 +505,4 @@ def loadWebDeTasks(calendar_url, username, password):
         )
 
     return result
+

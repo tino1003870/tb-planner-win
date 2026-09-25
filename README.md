@@ -1,19 +1,25 @@
-# TB Planner for Windows
+# TB Planner – Windows
 
-**TB Planner** is a standalone task planning application for Windows.
+TB Planner is a Gantt-/WBS-based task planner with CalDAV synchronization.
 
-It combines a hierarchical task list with a Gantt-style timeline and synchronizes project tasks with a CalDAV server using VTODO calendar items.
+## Windows release
+
+The current Windows release is provided as a complete PyInstaller package.
+
+Download the current release from the GitHub Releases page and **extract the complete package** before starting `TB-Planner.exe`.
+
+The application does not require a separate Python installation.
 
 ## Features
 
-* Hierarchical task list
-* WBS-style task numbering
-* Gantt-style project timeline
-* Start date, due date and duration
-* CalDAV / VTODO synchronization
-* WebDAV/CalDAV server connection
-* Qt 6 / PySide6 user interface
-* Python backend
+- Hierarchical task planning using WBS
+- Gantt diagram
+- Start date and duration handling
+- Automatic calculation of the end date
+- CalDAV synchronization
+- VTODO support
+- Windows application built with PySide6 / Qt 6
+- Standalone PyInstaller distribution
 
 ## Development
 
@@ -21,29 +27,49 @@ The application is developed using Python 3 and Qt 6 / PySide6.
 
 Create a virtual environment:
 
-```cmd
+```powershell
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\Activate.ps1
 ```
 
-Run the application from the source tree:
+Install the required packages:
 
-```cmd
-python src\main.py
+```powershell
+pip install -r requirements.txt
 ```
 
-## Windows Development
+Build the Windows application:
 
-The Windows port is developed separately from the `tb-planner-nx` project.
+```powershell
+pyinstaller TB-Planner.spec
+```
 
-The goal is to keep the existing application architecture and functionality while providing a native Windows development and build environment without requiring Visual Studio.
+The resulting application is created in:
 
-## Status
+```text
+dist\TB-Planner\
+```
 
-**Current release: v0.1.0**
+The executable is:
 
-The initial Windows port is based on the current `tb-planner-nx` source tree.
+```text
+dist\TB-Planner\TB-Planner.exe
+```
+
+## Project structure
+
+```text
+src/
+├── main.py
+├── qml/
+└── python/
+    ├── backend.py
+    ├── planner.py
+    ├── syncmanager.py
+    ├── taskmodel.py
+    └── caldav/
+```
 
 ## License
 
-See the `LICENSE` file included in the repository.
+See the repository for the current license information.
