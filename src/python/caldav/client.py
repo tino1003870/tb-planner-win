@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import base64
+import ssl
 import urllib.request
 import urllib.error
+
+import certifi
 
 
 class CalDAVClient:
@@ -28,6 +31,10 @@ class CalDAVClient:
 
         self.auth_header = "Basic " + token
 
+        self.ssl_context = ssl.create_default_context(
+            cafile=certifi.where()
+        )
+
     def _request(self, url, method="GET", data=None, headers=None):
         request_headers = {
             "Authorization": self.auth_header,
@@ -43,7 +50,11 @@ class CalDAVClient:
             headers=request_headers,
         )
 
-        return urllib.request.urlopen(request, timeout=30)
+        return urllib.request.urlopen(
+            request,
+            timeout=30,
+            context=self.ssl_context,
+        )
 
     def get(self, url):
         with self._request(url, "GET") as response:
