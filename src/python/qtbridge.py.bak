@@ -1,0 +1,91 @@
+import importlib
+
+from PySide6.QtCore import QObject, Signal, Slot, QThread
+
+
+class Worker(QThread):
+    finished = Signal(str, object)
+    error = Signal(str, str)
+
+    def __init__(self, method, args):
+        super().__init__()
+        self.method = method
+        self.args = args
+
+    def run(self):
+        try:
+            module_name, function_name = self.method.split(".", 1)
+
+            module = importlib.import_module(module_name)
+            function = getattr(module, function_name)
+
+            result = function(*self.args)
+
+            self.finished.emit(self.method, result)
+
+        except Exception as exc:
+            self.error.emit(self.method, str(exc))
+
+
+class PythonBridge(QObject):
+
+    asyncFinished = Signal(str, object)
+    asyncError = Signal(str, str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._workers = []
+
+    @Slot(str, list, result="QVariant")
+    def call(self, method, args):
+        """
+        Synchrone Kompatibilitätsschnittstelle.
+
+        Für kurze Python-Aufrufe weiterhin direkt im GUI-Thread.
+        """
+
+        module_name, function_name = method.split(".", 1)
+
+        module = importlib.import_module(module_name)
+        function = getattr(module, function_name)
+
+        return function(*args)
+
+    @Slot(str, list)
+    def callAsync(self, method, args):
+        """
+        Asynchroner Python-Aufruf.
+
+        Lange/blockierende Operationen wie CalDAV-Synchronisation
+        laufen in einem separaten QThread, damit der Qt-Eventloop
+        und damit die QML-Oberfläche weiterlaufen.
+        """
+
+        worker = Worker(method, args)
+
+        self._workers.append(worker)
+
+        worker.finished.connect(self._asyncFinished)
+        worker.error.connect(self._asyncError)
+        worker.finished.connect(worker.deleteLater)
+        worker.error.connect(worker.deleteLater)
+
+        worker.finished.connect(
+            lambda *_: self._removeWorker(worker)
+        )
+
+        worker.error.connect(
+            lambda *_: self._removeWorker(worker)
+        )
+
+        worker.start()
+
+    def _removeWorker(self, worker):
+        if worker in self._workers:
+            self._workers.remove(worker)
+
+    def _asyncFinished(self, method, result):
+        self.asyncFinished.emit(method, result)
+
+    def _asyncError(self, method, message):
+        self.asyncError.emit(method, message)

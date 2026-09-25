@@ -1,0 +1,44 @@
+# Maintainer: tino1003870 <schurzmann@gmail.com>
+
+pkgname=tb-planner
+pkgver=0.1.0
+pkgrel=0
+pkgdesc="Task and Gantt planner"
+url="https://github.com/tino1003870/tb-planner-nx"
+arch="aarch64"
+license="GPL-3.0-or-later"
+
+depends="
+    python3
+    py3-pyside6
+    qt6-qtbase
+    qt6-qtdeclarative
+"
+
+source=""
+
+build() {
+    :
+}
+
+package() {
+    install -d "$pkgdir/usr/lib/tb-planner"
+    install -d "$pkgdir/usr/bin"
+    install -d "$pkgdir/usr/share/applications"
+    install -d "$pkgdir/usr/share/icons/hicolor/scalable/apps"
+
+    cp -r "$startdir/../../src" "$pkgdir/usr/lib/tb-planner/"
+
+    cat > "$pkgdir/usr/bin/tb-planner" <<'SCRIPT'
+#!/bin/sh
+exec python3 /usr/lib/tb-planner/src/main.py "$@"
+SCRIPT
+
+    chmod +x "$pkgdir/usr/bin/tb-planner"
+
+    cp "$startdir/tb-planner.desktop" \
+       "$pkgdir/usr/share/applications/tb-planner.desktop"
+
+    cp "$startdir/tb-planner.svg" \
+       "$pkgdir/usr/share/icons/hicolor/scalable/apps/tb-planner.svg"
+}

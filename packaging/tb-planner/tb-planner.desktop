@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=TB Planner
+Exec=tb-planner
+Icon=tb-planner
+Type=Application
+Categories=Office;ProjectManagement;
+Terminal=false

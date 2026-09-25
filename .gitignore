@@ -1,0 +1,4 @@
+.venv/
+__pycache__/
+*.pyc
+src/qml/Python.qml.bak
